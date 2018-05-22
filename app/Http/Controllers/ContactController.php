@@ -36,6 +36,18 @@ class ContactController extends Controller
      */
     public function store(Request $request)
     {
+        //dd($request->input(first_name));
+        // if (!$request->has(['first_name', 'last_name', 'email']) ||
+        //     empty($request->input('first_name'))) {
+        //     abort(406, 'Missing data!');
+        // }
+
+        $request->validate([
+            'first_name' => 'required|string|unique:contacts',
+            'last_name' => 'required|string',
+            'email' => 'required|string'
+        ]);
+
         $contact = new Contact();
 
         $contact->first_name = $request->input('first_name');
@@ -55,7 +67,11 @@ class ContactController extends Controller
      */
     public function show($id)
     {
-        return Contact::find($id);
+        $contact = Contact::find($id);
+        if (!isset($contact)) {
+            abort(404, "Contact doesn't exist");
+        } 
+        return $contact;
     }
 
     /**
